@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+python-dotenv
+streamlit
+langchain
+langchain-google-genai
+b2sdk
+PyMuPDF
+faiss-cpu
+requests
+huggingface-hub
+pymongo
+langchain-community
+langchain-huggingface
+sentence-transformers
+python-multipart
+openpyxl

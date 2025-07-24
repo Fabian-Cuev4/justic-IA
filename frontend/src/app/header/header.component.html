@@ -1,0 +1,24 @@
+<header
+  class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-[#74409B] to-[#384C81] text-white px-8 py-4 flex items-center justify-between shadow"
+>
+  <a routerLink="/inicio" class="flex items-center gap-2">
+    <img src="/logo.png" alt="Logo" class="h-auto w-[70px] object-contain" />
+    <span class="font-bold text-xl">KUNTUR - JusticIA</span>
+  </a>
+  
+  <nav class="flex items-center gap-8">
+    <a routerLink="/cargar-caso" routerLinkActive="hover:underline" class="hover:underline">Nuevo caso</a>
+    <a routerLink="/historial-casos" routerLinkActive="hover:underline" class="hover:underline">Historial de casos</a>
+    <a routerLink="/base-legal" routerLinkActive="hover:underline" class="hover:underline">Base legal</a>
+    <a routerLink="/mas-buscados" routerLinkActive="hover:underline" class="hover:underline">Más buscados</a>
+  </nav>
+  
+  <button
+    routerLink="/juez-ia"
+    routerLinkActive="hover:underline"
+    class="bg-transparent border border-white px-5 py-2 rounded-lg font-bold text-white bg-clip-text hover:opacity-80"
+  >
+    Juez IA
+  </button>
+</header>
+

@@ -1,0 +1,24 @@
+justicIA/
+│
+├── backend/
+│   └── app/
+│       ├── main.py                     ← Inicializa FastAPI
+│       ├── routes/                     ← Endpoints de la API
+│       │   └── query.py
+│       ├── loaders/                    ← Extracción de texto y archivos
+│       │   ├── b2_loader.py
+│       │   └── pdf_loader.py
+│       ├── vectorstore/                ← Manejo de FAISS
+│       │   └── faiss_handler.py
+│       ├── llm/                        ← Configuración del LLM
+│       │   └── rag_chain.py
+│       └── config/                     ← Variables de entorno y claves
+│           └── settings.py
+│
+├── frontend/
+│   └── streamlit_app/
+│       └── ui.py                      ← Interfaz con preguntas y respuestas
+│
+├── .env
+├── requirements.txt
+└── README.md

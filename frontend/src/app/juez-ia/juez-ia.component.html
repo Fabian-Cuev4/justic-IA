@@ -1,0 +1,86 @@
+<div class="flex items-center justify-center min-h-screen  bg-gray-100">
+  <div class="flex w-full max-w-5xl rounded-lg shadow-lg overflow-hidden bg-white">
+    <!-- Casos cargados -->
+    <div class="w-1/2 bg-white p-10">
+      <h2 class="text-3xl font-bold mb-8 text-blue-900">Casos Cargados</h2>
+      <!-- Contenedor desplazable -->
+      <div class="space-y-4 overflow-y-auto max-h-140 pr-2">
+        @if (cargando) {
+        <div class="text-blue-700">Cargando casos...</div>
+        } @if (!cargando && casos.length === 0 && !error) {
+        <div class="text-gray-500">No hay casos en proceso.</div>
+        } @for (caso of casos; track $index) {
+        <div class="bg-white border border-blue-300 rounded-xl px-6 py-4 flex items-center justify-between">
+          <div>
+            <div class="font-semibold text-lg text-blue-900">
+
+              Nombre del Caso: {{ caso.nombre }}
+            </div>
+            <div class="text-gray-700">{{ caso.tipoDelito || "Sin tipo" }}</div>
+          </div>
+          <button (click)="juzgarCaso(caso)"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition">
+            Juzgar
+          </button>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Juez IA -->
+    <div
+      class="w-1/2 bg-gradient-to-r from-[#74409B] to-[#384C81] p-10 flex flex-col items-center justify-start max-h-[708px] overflow-y-auto">
+
+      <div class="mb-6">
+        <img src="Juez_ia.png" alt="Juez IA" width="200" height="150" />
+      </div>
+      <h3 class="text-2xl font-bold text-white mb-6">Juez IA</h3>
+      @if (cargando && casoSeleccionado) {
+      <div class="bg-white rounded-xl p-6 w-full max-w-md mb-6 min-h-[120px] flex flex-col justify-center">
+        <svg width="40" height="12" viewBox="0 0 40 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="6" cy="6" r="5" fill="white">
+            <animate attributeName="opacity" values="1;0.3;1" dur="1s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="20" cy="6" r="5" fill="white">
+            <animate attributeName="opacity" values="1;0.3;1" dur="1s" begin="0.2s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="34" cy="6" r="5" fill="white">
+            <animate attributeName="opacity" values="1;0.3;1" dur="1s" begin="0.4s" repeatCount="indefinite" />
+          </circle>
+        </svg>
+        <div class="text-blue-700 text-center">Obteniendo veredicto...</div>
+      </div>
+      } @if (casoSeleccionado && !cargando) {
+      <!-- VEREDICTO -->
+      <div class="mb-4 w-full">
+        <label class="text-xl font-semibold text-white block mb-2">Veredicto:</label>
+        <div [innerHTML]="veredictoFormateado"
+          class="whitespace-pre-line bg-gray-50 border rounded px-4 py-3 text text-gray-800 shadow-inner">
+        </div>
+
+      </div>
+
+      <!-- BOTÓN DETALLES -->
+      <button class="bg-white hover:bg-blue-100 text-blue-800 font-semibold px-4 py-2 rounded-md shadow transition mb-2"
+        (click)="mostrarDetalles = !mostrarDetalles">
+        {{ mostrarDetalles ? 'Ocultar Detalle' : 'Ver Detalle' }}
+      </button>
+
+      <!-- MODAL DE DETALLES SOBREPUESTO -->
+      <!-- Overlay que cubre toda la pantalla -->
+      <div *ngIf="mostrarDetalles"
+        class="fixed inset-0 bg-transparent bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50"
+        (click)="mostrarDetalles = false">
+
+        <!-- Cuadro blanco del detalle -->
+        <div class="bg-white rounded-xl shadow-lg p-6 max-w-3xl w-[90%] max-h-[90vh] overflow-y-auto relative"
+          (click)="$event.stopPropagation()"> <!-- Detiene el cierre si se hace clic dentro -->
+
+          <div [innerHTML]="marked.parse(detalles || '')" class="text-sm text-gray-800 whitespace-pre-line">
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</div>

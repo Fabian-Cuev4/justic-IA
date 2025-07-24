@@ -1,0 +1,151 @@
+@if (!loading) {
+<div class="min-h-screen pt-24 px-6 bg-gray-100">
+  <div class="min-h-[80vh] max-w-7xl mx-auto rounded-xl shadow-lg overflow-hidden grid grid-cols-1 md:grid-cols-2">
+
+    <!-- IZQUIERDA: Juez IA -->
+    <div class="bg-gradient-to-r from-[#74409B] to-[#384C81] text-white p-8 flex flex-col justify-center items-center">
+      <img src="Juez_ia.png" alt="Juez IA" class="w-auto h-90 mb-6" />
+      <h2 class="text-4xl font-extrabold text-blue-100 mb-4">Juez IA</h2>
+      <div class="border border-white p-4 rounded-lg shadow-md text-blue-100 text-center backdrop-blur-md bg-white/10">
+        <p>
+          <strong>JusticIA</strong> es una plataforma judicial impulsada por inteligencia artificial que analiza denuncias,
+          partes policiales y evidencias digitales, emitiendo veredictos basados en el marco legal ecuatoriano con
+          imparcialidad y precisión.
+        </p>
+      </div>
+    </div>
+
+    <!-- DERECHA: Presentación -->
+    <div class="bg-white p-8 flex flex-col justify-between">
+
+      <div *ngIf="!mostrarDashboard" class="flex flex-col justify-between h-full space-y-6 text-gray-700 leading-relaxed">
+
+        <!-- Título e ícono -->
+        <div class="flex items-center justify-between">
+          <h2 class="text-3xl font-bold text-blue-900 flex items-center gap-3">
+            ¿Qué es Kuntur Security?
+            <img src="/kuntur_logo.png" alt="Logo de Kuntur Security" class="w-[50px] h-auto" />
+          </h2>
+        </div>
+
+        <!-- Introducción -->
+        <p>
+          <strong class="text-purple-700">Kuntur</strong>, que en quechua significa <em>cóndor</em>, simboliza sabiduría y justicia desde lo alto.
+          <strong>Kuntur Security</strong> es una iniciativa tecnológica que impulsa soluciones para la justicia y la seguridad digital.
+        </p>
+
+        <!-- Misión -->
+        <div class="bg-blue-50 rounded-lg p-4 shadow-sm">
+          <h3 class="text-xl font-semibold text-blue-800 flex items-center gap-2 mb-1">
+            🎯 Misión
+          </h3>
+          <p>
+            Aplicar inteligencia artificial para acelerar y transparentar procesos judiciales, generando análisis y veredictos apoyados en evidencia.
+          </p>
+        </div>
+
+        <!-- Visión -->
+        <div class="bg-blue-50  rounded-lg p-4 shadow-sm">
+          <h3 class="text-xl font-semibold text-blue-800 flex items-center gap-2 mb-1">
+            👁️ Visión
+          </h3>
+          <p>
+            Ser parte esencial de un sistema judicial moderno y confiable, respaldado por tecnología de vanguardia bajo el sello de Kuntur Security.
+          </p>
+        </div>
+
+        <!-- Objetivo -->
+        <div class="bg-blue-50  rounded-lg p-4 shadow-sm">
+          <h3 class="text-xl font-semibold text-blue-800 flex items-center gap-2 mb-1">
+            ⚙️ Objetivo
+          </h3>
+          <p>
+            Automatizar el análisis legal para facilitar decisiones justas, rápidas y basadas en normativa ecuatoriana.
+          </p>
+        </div>
+
+        <!-- Botón de acción -->
+        <div class="flex justify-end">
+          <button (click)="mostrarDashboard = true"
+            class="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-400 hover:from-purple-700 hover:to-indigo-500 text-white px-6 py-2 rounded-lg shadow transition">
+            📊 Ir al Panel de Control
+          </button>
+        </div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div *ngIf="mostrarDashboard">
+        <h2 class="text-2xl font-bold text-blue-900 mb-4">Panel de Control</h2>
+
+        <div class="grid grid-cols-1 gap-6 overflow-auto max-h-[60vh]">
+
+          <!-- Casos por mes -->
+          <div class="bg-gray-50 rounded-lg shadow p-4">
+            <h2 class="text-lg font-bold text-blue-900 mb-2">Casos por mes</h2>
+            <svg viewBox="0 0 120 120" class="mx-auto" width="120" height="120">
+              <circle cx="60" cy="60" r="50" fill="#F3F4F6" />
+              <ng-container *ngIf="totalCasos > 0">
+                <ng-container *ngFor="let t of tiposDelito; let i = index">
+                  <path *ngIf="t.value > 0" [attr.d]="getPieArc(i)" [attr.fill]="t.color" />
+                </ng-container>
+              </ng-container>
+            </svg>
+            <div class="text-center text-2xl font-semibold mt-4 text-blue-900">
+              {{ totalCasos }} <span class="text-base text-gray-500 font-normal">casos</span>
+            </div>
+          </div>
+
+          <!-- Delitos más frecuentes -->
+          <div class="bg-gray-50 rounded-lg shadow p-4">
+            <h2 class="text-lg font-bold text-blue-900 mb-2">Delitos más frecuentes</h2>
+            <div class="flex items-end gap-4 h-28">
+              <div *ngFor="let bar of barrasFrecuentes; let i = index" class="flex flex-col items-center">
+                <div [ngClass]="bar.color" class="w-8 rounded-t" [style.height]="bar.porcentaje * 1.2 + 'px'"></div>
+                <span class="text-xs mt-1">{{ bar.tipo }}</span>
+                <span class="text-xs font-bold" [ngClass]="bar.color.replace('bg-', 'text-')">{{ bar.porcentaje
+                  }}%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Últimos casos -->
+          <div class="bg-gray-50 rounded-lg shadow p-4">
+            <h2 class="text-lg font-bold text-blue-900 mb-2">Últimos casos</h2>
+            <div *ngFor="let caso of casos.slice(0, 3); let i = index" class="mb-2">
+              <div class="font-semibold">Caso {{ i + 1 }}</div>
+              <div class="text-xs text-gray-500">{{ caso.veredicto }}</div>
+            </div>
+            <div class="text-right mt-4">
+              <a routerLink="/historial-casos" class="text-sm text-blue-700 hover:underline font-semibold">Ver todos</a>
+            </div>
+          </div>
+
+          <!-- Delitos por mes -->
+          <div class="bg-gray-50 rounded-lg shadow p-4">
+            <h2 class="text-lg font-bold text-blue-900 mb-2">Delitos por mes</h2>
+            <svg viewBox="0 0 300 100" class="w-full h-32 mb-2">
+              <line x1="30" y1="10" x2="30" y2="90" stroke="#E5E7EB" stroke-width="2" />
+              <line x1="30" y1="90" x2="290" y2="90" stroke="#E5E7EB" stroke-width="2" />
+              <ng-container *ngFor="let linea of lineasMes">
+                <polyline fill="none" [attr.stroke]="linea.color" stroke-width="3"
+                  [attr.points]="getLinePoints(linea.data)" />
+              </ng-container>
+            </svg>
+            <div class="flex justify-between text-xs text-gray-500 px-2">
+              <span *ngFor="let mes of meses">{{ mes }}</span>
+            </div>
+          </div>
+        </div>
+
+
+
+        <div class="mt-6 text-right">
+          <button (click)="mostrarDashboard = false" class="text-blue-700 hover:underline text-sm font-medium">
+            ← Volver a la presentación
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}
