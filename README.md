@@ -1,4 +1,4 @@
-
+ 
 # ⚖️ JusticIA — Plataforma Judicial Inteligente
 
 JusticIA es una plataforma web que simula el rol de un juez asistido por inteligencia artificial. Permite analizar denuncias, partes policiales y documentos legales utilizando modelos avanzados de lenguaje y recuperación aumentada (RAG), con el objetivo de emitir dictámenes jurídicos automatizados basados en la legislación ecuatoriana.
@@ -108,3 +108,4 @@ ng serve
 ## 📜 Licencia
 
 MIT License
+ 
