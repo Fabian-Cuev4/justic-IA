@@ -1,3 +1,5 @@
+#PATH: backend/app/routes/casos.py
+
 from fastapi import APIRouter, Query, HTTPException, UploadFile, File, Form
 from typing import List
 from pydantic import BaseModel
@@ -13,7 +15,7 @@ from app.schemas.answer import AnswerResponse
 from app.db.mongo import db
 from collections import defaultdict
 
-   
+# Crear router para agrupar los endpoints relacionados a "casos".    
 router = APIRouter()
 
 # Modelo de respuesta
@@ -38,6 +40,7 @@ async def listar_casos(estado: str = Query(..., description="Filtrar casos por e
 
 # ---    
 
+# Endpoint: OBTENER TODOS LOS CASOS SIN FILTRO
 @router.get("/casos/todos", response_model=List[Caso])
 async def obtener_todos_casos():
     try:
@@ -118,9 +121,11 @@ async def usar_caso(caso_id: str):
         vectorstore = TemporaryVectorStoreBuilder().build(texto)
         cadena_qa = build_qa_chain([vectorstore])
 
+        # 6. Invocar la cadena de QA con la pregunta
         resultado = cadena_qa.invoke({"query": "¿Cuál es el veredicto para este caso según el parte policial?"})
         respuesta = resultado.get("result", "No se pudo generar el veredicto.")
 
+        # 7. Actualizar el caso con el veredicto
         return {
             "answer": respuesta,
             "sources": []  # puedes agregar fuentes reales si las tienes
@@ -133,19 +138,22 @@ async def usar_caso(caso_id: str):
 
 ######################################################################################################################
 
-### ENDPOINT PROPUESTO PARA DASHBOARD
+#ENDPOINT: Datos resumidos para dashboard principal
 class CasoDashboard(BaseModel):
     id: str
     tipoDelito: str
     fecha: str
 
+# --- ENDPOINTS PARA OBTENER DATOS DEL DASHBOARD ---
 @router.get("/casos/dashboard", response_model=List[CasoDashboard])
 async def obtener_casos_dashboard():
     try:
+    
         collection = db["casos"]
         resultados = collection.find({}, {"_id": 1, "tipoDelito": 1, "fecha": 1})
         casos = []
 
+        # Iterar sobre los resultados y construir la lista de casos
         for doc in resultados:
             casos.append({
                 "id": str(doc["_id"]),
@@ -158,6 +166,7 @@ async def obtener_casos_dashboard():
     
     
 # --- ENDPOINTS PARA ARMAR JSON DE LOS DASHBOARDS ---
+# ENDPOINT: Datos para construir gráficas del dashboard
 
 @router.get("/casos/dashboard-data")
 async def dashboard_data():
@@ -168,6 +177,7 @@ async def dashboard_data():
         tipo_count = defaultdict(int)
         mensual = defaultdict(lambda: defaultdict(int))  # tipo → mes → count
 
+        # Recorrer los casos y acumular datos
         for caso in casos:
             total += 1
 
@@ -203,6 +213,7 @@ async def dashboard_data():
             }
         }
 
+        # Retornar el JSON con los datos del dashboard
         return {
             "totalCasos": total,
             "tiposDelito": tiposDelito,

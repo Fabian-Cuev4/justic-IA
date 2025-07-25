@@ -1,24 +1,73 @@
-justicIA/
-│
-├── backend/
-│   └── app/
-│       ├── main.py                     ← Inicializa FastAPI
-│       ├── routes/                     ← Endpoints de la API
-│       │   └── query.py
-│       ├── loaders/                    ← Extracción de texto y archivos
-│       │   ├── b2_loader.py
-│       │   └── pdf_loader.py
-│       ├── vectorstore/                ← Manejo de FAISS
-│       │   └── faiss_handler.py
-│       ├── llm/                        ← Configuración del LLM
-│       │   └── rag_chain.py
-│       └── config/                     ← Variables de entorno y claves
-│           └── settings.py
-│
-├── frontend/
-│   └── streamlit_app/
-│       └── ui.py                      ← Interfaz con preguntas y respuestas
-│
-├── .env
-├── requirements.txt
-└── README.md
+justicIA_proyecto/
+├── justicIA/
+  ├── .env
+  ├── claves.txt
+  ├── estructura.txt
+  ├── package-lock.json
+  ├── README.md
+  ├── requirements.txt
+  ├── backend/
+    ├── app/
+      ├── main.py                         ← Inicializa FastAPI
+      ├── config/
+        ├── settings.py                  ← Variables de entorno y claves
+      ├── core/
+        ├── session.py
+      ├── db/
+        ├── mongo.py
+      ├── llm/
+        ├── rag_chain.py                ← Configuración del LLM y flujo RAG
+      ├── loaders/
+        ├── b2_loader.py               ← Carga de archivos desde Backblaze B2
+        ├── excel_loader.py
+        ├── pdf_loader.py              ← Extracción de texto de PDFs
+        ├── temp_loader.py
+      ├── routes/
+        ├── casos.py
+        ├── query.py                   ← Endpoints de la API
+      ├── schemas/
+        ├── answer.py
+      ├── scripts/
+        ├── init_index.py
+      ├── services/
+        ├── upload_chain.py
+      ├── vectorstore/
+        ├── faiss_handler.py          ← Manejo de FAISS
+        ├── temp_vectorstore.py
+    ├── faiss_indexes/
+      ├── coip_actualizado/
+        ├── index.faiss
+        ├── index.pkl
+      ├── corrupcion/
+      ├── data_carceles_pabellones/
+      ├── genero/
+      ├── global_index/
+      ├── ley_de_armas/
+      ├── ley_integridad/
+      ├── publico/
+        ├── index.faiss
+        ├── index.pkl
+  ├── frontend/
+    ├── .editorconfig
+    ├── angular.json
+    ├── package.json
+    ├── tailwind.config.js
+    ├── tsconfig.json
+    ├── public/
+      ├── coip_actualizado.pdf
+      ├── genero.pdf
+      ├── Juez_ia.png
+      ├── logo.png
+      ├── ...
+    ├── src/
+      ├── main.ts
+      ├── styles.css
+      ├── app/
+        ├── app.component.ts
+        ├── app.routes.ts
+        ├── base-legal/
+        ├── cargar-caso/
+        ├── juez-ia/
+        ├── historial-casos/
+        ├── shared/
+        ├── home/

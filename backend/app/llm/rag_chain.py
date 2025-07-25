@@ -1,11 +1,9 @@
-# 1) backend/app/llm/rag_chain.py
+#PATH: backend/app/llm/rag_chain.py
 
-from langchain_google_genai import ChatGoogleGenerativeAI           #
-from app.config.settings import GEMINI_API_KEY                      #
-#from langchain_community.chat_models import ChatOpenAI
-
-from langchain.chains import RetrievalQA                                    #combina un modelo LLM con un sistema de recuperación de contexto.     
-
+from langchain_google_genai import ChatGoogleGenerativeAI           
+from app.config.settings import GEMINI_API_KEY                      
+ 
+from langchain.chains import RetrievalQA                                    # Combina un modelo LLM con un sistema de recuperación de contexto.     
 from langchain_core.prompts import PromptTemplate                           # Permite crear plantillas de prompts para el modelo LLM.
 from langchain.schema import BaseRetriever                                  # Interfaz base para los recuperadores de datos.
 from langchain.vectorstores.base import VectorStore
@@ -14,11 +12,13 @@ from langchain.retrievers import MergerRetriever                            # Pe
 import os
 from dotenv import load_dotenv
 
+# Cargar las variables de entorno desde el archivo .env
 load_dotenv()
 
+# Construye una cadena de consulta RAG utilizando uno o más almacenes vectoriales y el modelo Gemini.
 def build_qa_chain(vectorstores: list[VectorStore]) -> RetrievalQA:         # función principal del módulo basadas en fuentes vertoriales
     llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",                                           # gemini-2.5-flash   ////  gemini-1.5-flash
+        model="gemini-2.5-flash",                                           # gemini-2.5-flash    
         google_api_key=GEMINI_API_KEY,
         temperature=0.3
 )
@@ -31,24 +31,24 @@ def build_qa_chain(vectorstores: list[VectorStore]) -> RetrievalQA:         # fu
 #         openai_api_key=os.getenv("OPENAI_API_KEY")
 #     )
 
-    # Asegurar que sea una lista (por si solo se pasa un elemento)
+
+    # Asegura que 'vectorstores' sea una lista (incluso si se pasa solo un elemento)
     if not isinstance(vectorstores, list):
         vectorstores = [vectorstores]
 
-    # Converte cada VectorStore a retrievers
-    # retrievers = [vs.as_retriever() for vs in vectorstores]
+    # Convierte cada VectorStore a un retriever (buscador), limitando a 2 documentos por búsqueda
     retrievers = [
         vs.as_retriever(search_kwargs={"k": 2})  # menos documentos por fuente
         for vs in vectorstores
     ]           
 
-    # Combinar múltiples retrievers
+    # Combina todos los retrievers (buscadores) en uno solo utilizando MergerRetriever
     combined_retriever: BaseRetriever = MergerRetriever(retrievers=retrievers)
 
     # Prompt (rol) del Juez IA
     from langchain.prompts import PromptTemplate
 
-    # Prompt (rol del Juez IA)
+    # Prompt que define el comportamiento del Juez IA
     prompt = PromptTemplate.from_template("""
     Eres **justicIA**, una inteligencia artificial especializada en leyes ecuatorianas que actúa como un juez.
 
@@ -81,12 +81,13 @@ def build_qa_chain(vectorstores: list[VectorStore]) -> RetrievalQA:         # fu
     Respuesta razonada y fundamentada:
     """)
 
-    # Crear la cadena de QA con el LLM y el recuperador combinado
+    # Crear la cadena de QA con el LLM y el recuperador combinado. Construcción final de la cadena RAG
     return RetrievalQA.from_chain_type(
         llm=llm,
         retriever=combined_retriever,
-        chain_type="stuff",
-        chain_type_kwargs={"prompt": prompt}
+        chain_type="stuff",                             # Tipo de cadena que combina el contexto completo en una sola entrada
+        chain_type_kwargs={"prompt": prompt}            # # Se usa el prompt definido previamente
     )
+   
 
 

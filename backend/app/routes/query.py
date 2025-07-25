@@ -1,5 +1,4 @@
-# Guardar el nuevo contenido corregido del archivo query.py
-# 3) backend/app/routes/query.py
+#PATH: backend/app/routes/query.py
 
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel
@@ -18,13 +17,15 @@ from typing import List
 
 router = APIRouter()
 
+# Modelos de datos para las solicitudes y respuestas
 class QuestionRequest(BaseModel):
-    question: str
-    filename: str  # ignorado, mantenido por compatibilidad
+    question: str                   # Pregunta que el usuario quiere hacer
+    filename: str                   # Campo incluido por compatibilidad, actualmente no se usa
 
 class AnswerResponse(BaseModel):
-    answer: str
-    sources: List[str]
+    answer: str                     # Respuesta generada por la IA
+    sources: List[str]              # Fuentes de donde se obtuvo la información  
+    
 
 # Consulta usando todos los documentos persistentes en B2, vectorizados individualmente
 @router.post("/query", response_model=AnswerResponse)
@@ -43,12 +44,16 @@ async def query_doc(data: QuestionRequest):
                 text = extract_text_from_excel(local_path)
             else:
                 continue  # Por seguridad, omitir si no es compatible
-
+            
+            # Nombre de índice seguro    
             safe_name = re.sub(r'[^\w\d_-]', '_', Path(fname).stem)                   # Reemplazar caracteres no seguros
             index_name = safe_name[:50]
+            
+            # Crear o cargar el vectorstore
             vs = create_or_load_vectorstore(text, index_name=index_name)
             vectorstores.append(vs)
 
+        # Construye la cadena de preguntas y respuestas con todos los índices
         qa_chain = build_qa_chain(vectorstores)
         result = qa_chain.invoke({"query": data.question})
 
@@ -66,7 +71,7 @@ async def query_doc(data: QuestionRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Consulta sobre archivo temporal
+# ENDPOINT: Consulta con archivo temporal
 @router.post("/upload-query", response_model=AnswerResponse)
 async def upload_query(question: str = Form(...), file: UploadFile = File(...)):
     try:
@@ -92,7 +97,7 @@ async def upload_query(question: str = Form(...), file: UploadFile = File(...)):
 
 ##################################################################################################################
 
-# Endpoint actual para preguntar.
+# ENDPOINT: Consulta con todos los documentos (alternativa simplificada)
 
 @router.post("/preguntar", response_model=AnswerResponse)                       # El formato de respuesta puede cambiar si se requiere
 async def preguntar_simple(data: QuestionRequest):
@@ -102,7 +107,7 @@ async def preguntar_simple(data: QuestionRequest):
         fuentes = [f for f in archivos if f.endswith(".pdf") or f.endswith(".xlsx")]
 
         vectorstores = []
-
+        # Procesa cada archivo, extrae texto y crea un vectorstore
         for archivo in fuentes:
             local_path = download_file_from_b2(archivo)
 
@@ -131,6 +136,10 @@ async def preguntar_simple(data: QuestionRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al responder: {e}")
 
+"""
+    Versión alternativa del endpoint que también procesa todos los archivos
+    PDF y Excel persistentes, construye vectores y lanza la consulta.
+    
+"""
 
-
-# Endpoint actual para preguntar.
+ 

@@ -1,4 +1,4 @@
-# backend/app/db/mongo.py
+#PATH: backend/app/db/mongo.py
 from pymongo import MongoClient
 from datetime import datetime
 import os
@@ -10,9 +10,10 @@ if not MONGO_URI:
 
 # Conexión con MongoDB Atlas
 client = MongoClient(MONGO_URI)
-db = client["justicia"]
+db = client["justicia"]                     # Nombre de la base de datos
 collection = db["respuestas"]
 
+# Función para guardar una respuesta en la colección "respuestas"
 def guardar_respuesta(question: str, answer: str, sources: list[str], session_id: str, file_bytes: bytes = None):
     doc = {
         "session_id": session_id,
@@ -27,7 +28,7 @@ def guardar_respuesta(question: str, answer: str, sources: list[str], session_id
 
     collection.insert_one(doc)
 
-# Nueva función: obtener casos según su estado
+# Nueva función: obtener casos según su estado ('pendiente', 'sentenciado', etc)
 def obtener_casos_por_estado(estado: str):
     collection = db["casos"]
     resultados = collection.find({"estado": estado})
@@ -44,6 +45,7 @@ def obtener_casos_por_estado(estado: str):
         })
     return casos
 
+# Función para obtener todos los casos sin filtrar
 def obtener_casos():
     collection = db["casos"]
     resultados = collection.find()
@@ -59,9 +61,7 @@ def obtener_casos():
         })
     return casos
 
-
-
-
+# Función para insertar un nuevo caso judicial
 def insertar_caso(caso: dict):
     casos_collection = db["casos"]
     casos_collection.insert_one(caso)

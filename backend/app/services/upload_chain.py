@@ -14,7 +14,7 @@ class UploadQAService:
     def __init__(self, upload_file: UploadFile):
         self.upload_file = upload_file
 
-    async def get_answer(self, question: str):  # ✅ Elimina el tipo de retorno (para permitir devolver 2 cosas)
+    async def get_answer(self, question: str):          # Elimina el tipo de retorno (para permitir devolver 2 cosas)
         file_bytes = await self.upload_file.read()      # Leer bytes del archivo original
         self.upload_file.file.seek(0)
 

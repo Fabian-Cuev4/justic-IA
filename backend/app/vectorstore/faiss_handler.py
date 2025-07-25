@@ -1,9 +1,9 @@
-# 5) backend/app/vectorstore/faiss_handler.py
+#PATH: backend/app/vectorstore/faiss_handler.py
 
 import os
 from langchain.text_splitter import RecursiveCharacterTextSplitter          # Divide el texto en chunks
 from langchain_community.vectorstores import FAISS                          # Motor de búsqueda vectorial
-from langchain_huggingface import HuggingFaceEmbeddings            # Convierte texto en vectores
+from langchain_huggingface import HuggingFaceEmbeddings                     # Convierte texto en vectores
 from langchain.docstore.document import Document                            # Envuelve texto en un formato estructurado  
 from typing import Union, List
 import shutil
@@ -13,13 +13,14 @@ import shutil
 FAISS_DIR = "faiss_indexes"
 os.makedirs(FAISS_DIR, exist_ok=True)
 
-# se divide el texto (en bloques de 1000 caracteres con 100 de solapamiento). Se convierte cada parte en un vector (embedding).
+# se divide el texto (en bloques de M caracteres con N de solapamiento). Se convierte cada parte en un vector (embedding).
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=500,
     chunk_overlap=50,
     separators=["\n\n", "\n", ".", " ", ""]
 )
 
+# Utiliza un modelo preentrenado de Hugging Face para convertir texto en vectores.
 embedder = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
 # Carga un índice FAISS existente si ya fue creado.
@@ -40,14 +41,15 @@ def create_or_load_vectorstore(data: Union[str, List[Document]], index_name: str
     else:
         raise ValueError("El parámetro `data` debe ser un string o una lista de Document.")
 
-    # ✅ Asegura que el directorio exista antes de guardar el índice
+    # Asegura que el directorio exista antes de guardar el índice
     os.makedirs(index_path, exist_ok=True)
 
-    print(f"Total de chunks creados: {len(docs)}")          # Solo para depuración
+    print(f"Total de chunks creados: {len(docs)}")          # Solo para depuración como saber cuántos chunks se han creado
     vectorstore = FAISS.from_documents(docs, embedder)
     vectorstore.save_local(index_path)
     return vectorstore
 
+# Elimina un índice FAISS y su directorio asociado.
 def delete_vectorstore(index_name: str):
     index_path = os.path.join(FAISS_DIR, index_name)
     if os.path.exists(index_path):
